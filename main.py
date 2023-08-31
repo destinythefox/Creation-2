@@ -4,7 +4,6 @@ from bush import Bush, update_bush_lifecycle, generate_bushes
 from terrain import Terrain
 from tree import Tree, generate_trees, update_tree_lifecycle  # Assuming these are in a file named 'tree.py'
 
-
 # Initialize Pygame
 pygame.init()
 
@@ -38,6 +37,11 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+            if event.key == pygame.K_r:  # Listen for 'R' key press
+                # Regenerate terrain, bushes, and trees
+                terrain = Terrain(screen_width, screen_height)
+                bushes = generate_bushes(terrain.surface, terrain.block_colors)
+                trees = generate_trees(terrain.surface, terrain.block_colors)
 
     # Draw terrain
     screen.blit(terrain.surface, (0, 0))
@@ -55,8 +59,9 @@ while running:
         # Update bush life cycle
         update_bush_lifecycle(bushes)
 
+    # Draw trees
     for tree in trees:
-        pygame.draw.circle(screen, (0, 100, 0), (tree.x, tree.y), 10)  
+        pygame.draw.circle(screen, (0, 100, 0), (tree.x, tree.y), 10)
 
     # Draw bushes and berries
     for bush in bushes:
