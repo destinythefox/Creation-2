@@ -1,8 +1,9 @@
 import pygame
-from terrain import generate_terrain
-from tree import generate_trees, update_tree_lifecycle
-from bush import generate_bushes, update_bush_lifecycle
-import random 
+import random
+from bush import Bush, update_bush_lifecycle
+from terrain import Terrain
+from tree import Tree, generate_trees, update_tree_lifecycle  # Assuming these are in a file named 'tree.py'
+
 
 # Initialize Pygame
 pygame.init()
@@ -13,28 +14,18 @@ screen_height = 1080
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Divine Simulation - World for Followers")
 
-# Generate terrain
-terrain = generate_terrain(screen_width, screen_height)
-
-# Generate trees
-biome_colors = {
-    "grass": (0, 128, 0),
-    "stone": (128, 128, 128),
-    "water": (0, 0, 255),
-    "sand": (255, 255, 102)
-}
-trees = generate_trees(terrain, biome_colors)
-
-# Generate bushes
-bushes = generate_bushes(terrain, biome_colors)
+# Font for displaying month and year
+font = pygame.font.Font(None, 36)
 
 # Time progression
 current_month = 1
+current_year = 1
 month_duration_seconds = 5
 time_elapsed = 0
 
-# Font for displaying month
-font = pygame.font.Font(None, 36)
+# Initialize terrain and bushes
+terrain = Terrain(screen_width, screen_height)
+bushes = [Bush(random.randint(0, screen_width), random.randint(0, screen_height)) for _ in range(50)]
 
 # Main game loop
 running = True
@@ -47,34 +38,36 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
 
+    # Draw terrain
+    screen.blit(terrain.surface, (0, 0))
+
     # Update time progression
-    time_elapsed += clock.get_time()  # Get time since last frame in milliseconds
+    time_elapsed += clock.tick(30)
     if time_elapsed >= month_duration_seconds * 1000:
         current_month += 1
         time_elapsed = 0
-        
-        # Update tree and bush life cycles
-        update_tree_lifecycle(trees)
+
+        if current_month > 12:
+            current_month = 1
+            current_year += 1
+
+        # Update bush life cycle
         update_bush_lifecycle(bushes)
-    
-    screen.blit(terrain, (0, 0))
-    
-    # Draw trees
-    for tree in trees:
-        pygame.draw.circle(screen, (0, 255, 0), (tree.x, tree.y), 2)  # Green dots
-    
-    # Draw bushes with berries
+
+    # Draw bushes and berries
     for bush in bushes:
-        pygame.draw.circle(screen, (0, 255, 0), (bush.x, bush.y), 5)  # Green circle
-        for _ in range(bush.berries):
-            pygame.draw.circle(screen, (255, 0, 0), (bush.x + random.randint(-2, 2), bush.y + random.randint(-2, 2)), 2)  # Red dot
-    
-    # Display current month
-    month_text = font.render("Month: " + str(current_month), True, (255, 255, 255))
+        pygame.draw.circle(screen, (0, 255, 0), (bush.x, bush.y), 5)
+        for berry in bush.berries:
+            pygame.draw.circle(screen, (255, 0, 0), berry, 2)
+
+    # Clear the area where the month and year text will be displayed
+    pygame.draw.rect(screen, (0, 0, 0), (screen_width - 200, 0, 200, 50))
+
+    # Display current month and year
+    month_text = font.render(f"Month: {current_month}, Year: {current_year}", True, (255, 255, 255))
     screen.blit(month_text, (screen_width - month_text.get_width() - 10, 10))
-        
+
     pygame.display.flip()
-    clock.tick(30)  # Limit frame rate to 30 FPS
 
 # Quit Pygame
 pygame.quit()
