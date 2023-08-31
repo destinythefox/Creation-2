@@ -38,6 +38,8 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
             if event.key == pygame.K_r:  # Listen for 'R' key press
+                # Clear the screen
+                screen.fill((0, 0, 0))
                 # Regenerate terrain, bushes, and trees
                 terrain = Terrain(screen_width, screen_height)
                 bushes = generate_bushes(terrain.surface, terrain.block_colors)
