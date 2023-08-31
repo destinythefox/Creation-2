@@ -23,9 +23,12 @@ month_duration_seconds = 5
 time_elapsed = 0
 
 # Initialize terrain and bushes
-terrain = Terrain(screen_width, screen_height)
+terrain = Terrain(screen_width, screen_height, random.randint(0, 1000))
 bushes = generate_bushes(terrain.surface, terrain.block_colors)
 trees = generate_trees(terrain.surface, terrain.block_colors)
+
+# Identify forests
+terrain.identify_forests(trees)
 
 # Main game loop
 running = True
@@ -37,13 +40,11 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
-            if event.key == pygame.K_r:  # Listen for 'R' key press
-                # Clear the screen
-                screen.fill((0, 0, 0))
-                # Regenerate terrain, bushes, and trees
-                terrain = Terrain(screen_width, screen_height)
+            if event.key == pygame.K_r:
+                terrain = Terrain(screen_width, screen_height, random.randint(0, 1000))
                 bushes = generate_bushes(terrain.surface, terrain.block_colors)
                 trees = generate_trees(terrain.surface, terrain.block_colors)
+                terrain.identify_forests(trees)
 
     # Draw terrain
     screen.blit(terrain.surface, (0, 0))
@@ -53,12 +54,9 @@ while running:
     if time_elapsed >= month_duration_seconds * 1000:
         current_month += 1
         time_elapsed = 0
-
         if current_month > 12:
             current_month = 1
             current_year += 1
-
-        # Update bush life cycle
         update_bush_lifecycle(bushes)
 
     # Draw trees
