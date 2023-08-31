@@ -5,6 +5,12 @@ class Terrain:
     def __init__(self, width, height):
         self.width = width
         self.height = height
+        self.block_colors = {
+            "grass": (0, 128, 0),
+            "stone": (128, 128, 128),
+            "water": (0, 0, 255),
+            "sand": (255, 255, 102)
+        }
         self.surface = self.generate_terrain()
 
     def generate_terrain(self):

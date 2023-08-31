@@ -1,6 +1,6 @@
 import pygame
 import random
-from bush import Bush, update_bush_lifecycle
+from bush import Bush, update_bush_lifecycle, generate_bushes
 from terrain import Terrain
 from tree import Tree, generate_trees, update_tree_lifecycle  # Assuming these are in a file named 'tree.py'
 
@@ -25,7 +25,8 @@ time_elapsed = 0
 
 # Initialize terrain and bushes
 terrain = Terrain(screen_width, screen_height)
-bushes = [Bush(random.randint(0, screen_width), random.randint(0, screen_height)) for _ in range(50)]
+bushes = generate_bushes(terrain.surface, terrain.block_colors)
+trees = generate_trees(terrain.surface, terrain.block_colors)
 
 # Main game loop
 running = True
@@ -53,6 +54,9 @@ while running:
 
         # Update bush life cycle
         update_bush_lifecycle(bushes)
+
+    for tree in trees:
+        pygame.draw.circle(screen, (0, 100, 0), (tree.x, tree.y), 10)  
 
     # Draw bushes and berries
     for bush in bushes:
